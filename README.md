@@ -79,21 +79,21 @@ Learn how AWS Transit Gateway works!
       * **10.51.4.0/22** to **VPC1Production** TGW Attachment
       * **10.51.8.0/22** to **VPC2Development** TGW Attachment
 4. Prod TGW RT
-  1. Associate to **VPC1Rpdocution**
-  2. Static Routes to create
-    * **0.0.0.0/0** to **VPC0Egress** TGW Attachment
+   1. Associate to **VPC1Rpdocution**
+   2. Static Routes to create
+      * **0.0.0.0/0** to **VPC0Egress** TGW Attachment
 5. Dev TGW RT
    1. Associate to **VPC0Development**
    2. Static Routes to create
-     * **0.0.0.0/0** to **VPC0Egress** TGW Attachment
+      * **0.0.0.0/0** to **VPC0Egress** TGW Attachment
 6. Connect to **ec2Prod1**
 7. From **ec2Prod1** try: **Ping 4.2.2.1** - OK!
 8. From **ec2Prod1** try: **ping ec2Dev1IPADDR** - Wait, I can ping the Development systems?
 9. Looks like we need a blackhole to fix this issue up...
 10. Update TGW Route Table **PROD TGW RT**
-  * Add Route **10.51.8.0/22** to **blackhole**
+   * Add Route **10.51.8.0/22** to **blackhole**
 11. Update TGW Route Table **PROD TGW RT**
-  * Add Route **10.51.4.0/22** to **blackhole**
+   * Add Route **10.51.4.0/22** to **blackhole**
 12. From **ec2Prod1** - Try to ping **ec2Dev1** - Nice!  It doesn't work now.
 13. From **ec2Egress1** - Try to ping **ec2Prod1** - Nice it works!
 14. From **ec2Egress1** - Try to ping **Ec2Dev1** - Nice it works!
