@@ -14,38 +14,38 @@ Learn how AWS Transit Gateway works!
 ## 1. Setup Transit Gateway
 1. Connect to Primary Region.
 2. Create Transit GW
-   1. Name tag: tgw-ca-1
-   2. Amazon Side ASN: 64612
-   3. DNS Support: Enabled
-   4. VPN ECMP Support: Enabled
-   5. Default Route Table Associate: Enabled
-   6. Default Route Table Propogation: Enabled
-   7. Multi-cast Support: Disabled
+   * Name tag: tgw-ca-1
+   * Amazon Side ASN: 64612
+   * DNS Support: Enabled
+   * VPN ECMP Support: Enabled
+   * Default Route Table Associate: Enabled
+   * Default Route Table Propogation: Enabled
+   * Multi-cast Support: Disabled
 3. Create TG Attachment - **VPC0Egress**
-   1. Attachment Type: VPC
-   2. Attachment name tag: VPC0Egress
-   3. DNS Support: Yes
-   4. IPv6 Support: No
-   5. Select VPC: VPC0Egress
-   6. Subnet: SnPbEg1
+   * Attachment Type: VPC
+   * Attachment name tag: VPC0Egress
+   * DNS Support: Yes
+   * IPv6 Support: No
+   * Select VPC: VPC0Egress
+   * Subnet: SnPbEg1
 4. Create TG Attachment - **VPC1Production**
-   1. Attachment Type: VPC
-   2. Attachment name tag: VPC1Production
-   3. DNS Support: Yes
-   4. IPv6 Support: No
-   5. Select VPC: VPC1Production
-   6. Subnet: Select only subnet.
+   * Attachment Type: VPC
+   * Attachment name tag: VPC1Production
+   * DNS Support: Yes
+   * IPv6 Support: No
+   * Select VPC: VPC1Production
+   * Subnet: Select only subnet.
 5. Create TG Attachment - **VPC2Development**
-   1. Attachment Type: VPC
-   2. Attachment name tag: VPC2Development
-   3. DNS Support: Yes
-   4. IPv6 Support: No
-   5. Select VPC: VPC2Development
-   6. Subnet: Select only subnet.
+   * Attachment Type: VPC
+   * Attachment name tag: VPC2Development
+   * DNS Support: Yes
+   * IPv6 Support: No
+   * Select VPC: VPC2Development
+   * Subnet: Select only subnet.
 6. Open TGW Route Table and review routes.  You should now see 3 Routes
-   1. 10.51.0.0/22
-   2. 10.51.4.0/22
-   3. 10.51.8.0/22
+   * 10.51.0.0/22
+   * 10.51.4.0/22
+   * 10.51.8.0/22
 
 ## 2. Setup Traffic Flow throught the Transit Gateway
 1. Update Subnet Route Table **RT SnPbEg1**
