@@ -22,30 +22,30 @@ Learn how AWS Transit Gateway works!
    6. Default Route Table Propogation: Enabled
    7. Multi-cast Support: Disabled
 3. Create TG Attachment - **VPC0Egress**
-  1. Attachment Type: VPC
-  2. Attachment name tag: VPC0Egress
-  3. DNS Support: Yes
-  4. IPv6 Support: No
-  5. Select VPC: VPC0Egress
-  6. Subnet: SnPbEg1
+   1. Attachment Type: VPC
+   2. Attachment name tag: VPC0Egress
+   3. DNS Support: Yes
+   4. IPv6 Support: No
+   5. Select VPC: VPC0Egress
+   6. Subnet: SnPbEg1
 4. Create TG Attachment - **VPC1Production**
-  1. Attachment Type: VPC
-  2. Attachment name tag: VPC1Production
-  3. DNS Support: Yes
-  4. IPv6 Support: No
-  5. Select VPC: VPC1Production
-  6. Subnet: Select only subnet.
+   1. Attachment Type: VPC
+   2. Attachment name tag: VPC1Production
+   3. DNS Support: Yes
+   4. IPv6 Support: No
+   5. Select VPC: VPC1Production
+   6. Subnet: Select only subnet.
 5. Create TG Attachment - **VPC2Development**
-  1. Attachment Type: VPC
-  2. Attachment name tag: VPC2Development
-  3. DNS Support: Yes
-  4. IPv6 Support: No
-  5. Select VPC: VPC2Development
-  6. Subnet: Select only subnet.
+   1. Attachment Type: VPC
+   2. Attachment name tag: VPC2Development
+   3. DNS Support: Yes
+   4. IPv6 Support: No
+   5. Select VPC: VPC2Development
+   6. Subnet: Select only subnet.
 6. Open TGW Route Table and review routes.  You should now see 3 Routes
-  1. 10.51.0.0/22
-  2. 10.51.4.0/22
-  3. 10.51.8.0/22
+   1. 10.51.0.0/22
+   2. 10.51.4.0/22
+   3. 10.51.8.0/22
 
 ## 2. Setup Traffic Flow throught the Transit Gateway
 1. Update Subnet Route Table **RT SnPbEg1**
