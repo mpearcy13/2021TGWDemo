@@ -83,9 +83,9 @@ Learn how AWS Transit Gateway works!
   2. Static Routes to create
     * **0.0.0.0/0** to **VPC0Egress** TGW Attachment
 5. Dev TGW RT
-  1. Associate to **VPC0Development**
-  2. Static Routes to create
-    * **0.0.0.0/0** to **VPC0Egress** TGW Attachment
+   1. Associate to **VPC0Development**
+   2. Static Routes to create
+     * **0.0.0.0/0** to **VPC0Egress** TGW Attachment
 6. Connect to **ec2Prod1**
 7. From **ec2Prod1** try: **Ping 4.2.2.1** - OK!
 8. From **ec2Prod1** try: **ping ec2Dev1IPADDR** - Wait, I can ping the Development systems?
