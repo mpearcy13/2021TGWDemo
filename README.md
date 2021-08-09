@@ -57,7 +57,7 @@ Learn how AWS Transit Gateway works!
 4. Update Subnet Route Table **RT VPC2Development**
    * 0.0.0.0/0 destination Transit Gateway and select the TGW
 5. Connect to **ec2Prod**
-  * ssh -i "KEYNAME.pem" ec2-user@EC2PRODIP
+   * ssh -i "KEYNAME.pem" ec2-user@EC2PRODIP
 6. Did this work?  No, lets check th esecurity group on the **VPC1Production** environment.
 7. Add rule to the Security Group **NAME** for **SSH** with a source of **10.0.0.0/8**
 8. Test it again...  Did it work?  Yes!
