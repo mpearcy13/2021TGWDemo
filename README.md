@@ -70,14 +70,14 @@ Learn how AWS Transit Gateway works!
 
 1. Open the Transit Gateway Route Table.  Then delete the 3 associations linked to this route table.
 2. Create Outbound Route Tables for the 3 Domains
-  1. **Egress TGW RT**
-  2. **Prod TGW RT**
-  3. **Dev TGW RT**
+   1. **Egress TGW RT**
+   2. **Prod TGW RT**
+   3. **Dev TGW RT**
 3. Egress TGW RT
-  1. Associate to **VPC0Egress**
-  2. Static Routes to create
-    * **10.51.4.0/22** to **VPC1Production** TGW Attachment
-    * **10.51.8.0/22** to **VPC2Development** TGW Attachment
+   1. Associate to **VPC0Egress**
+   2. Static Routes to create
+      * **10.51.4.0/22** to **VPC1Production** TGW Attachment
+      * **10.51.8.0/22** to **VPC2Development** TGW Attachment
 4. Prod TGW RT
   1. Associate to **VPC1Rpdocution**
   2. Static Routes to create
