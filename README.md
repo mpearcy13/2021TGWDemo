@@ -12,7 +12,7 @@ Learn how AWS Transit Gateway works!
 6. Change security on the 2 key files...  chmod 400 KEYNAME.pem
 
 ## 1. Setup Transit Gateway
-1. Connect to Primary Region.
+1. Connect to Primary Region.  (Tested with ca-central-1)
 2. Create Transit GW
    * Name tag: tgw-ca-1
    * Amazon Side ASN: 64612
