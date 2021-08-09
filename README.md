@@ -14,13 +14,13 @@ Learn how AWS Transit Gateway works!
 ## 1. Setup Transit Gateway
 1. Connect to Primary Region.
 2. Create Transit GW
-  1. Name tag: tgw-ca-1
-  2. Amazon Side ASN: 64612
-  3. DNS Support: Enabled
-  4. VPN ECMP Support: Enabled
-  5. Default Route Table Associate: Enabled
-  6. Default Route Table Propogation: Enabled
-  7. Multi-cast Support: Disabled
+   1. Name tag: tgw-ca-1
+   2. Amazon Side ASN: 64612
+   3. DNS Support: Enabled
+   4. VPN ECMP Support: Enabled
+   5. Default Route Table Associate: Enabled
+   6. Default Route Table Propogation: Enabled
+   7. Multi-cast Support: Disabled
 3. Create TG Attachment - **VPC0Egress**
   1. Attachment Type: VPC
   2. Attachment name tag: VPC0Egress
