@@ -100,17 +100,7 @@ Learn how AWS Transit Gateway works!
 
 ## 4. Extra Credit - Let's add another region to our Transit Gateway
 
-ISSUE - Need to create a new Route Table in CA1 for this instead of using the default one...
-
-ISSUE - Update SG to include SSH Access to Private2 EC21
-
-
-1. Deploy CFN for Part 2.
-2. Ensure new Key is created in the new region (US-East-1)
-3. Update USE1 - Subnet Route Table (0.0.0.0/0)
-4. Update CA1 - Public0 Route Table (172.12.0.0/12)
-5. Update CA1 - Private1 Route Table ()
-6. Create Transit GW
+3. Create Transit GW
    1. Name tag: tgw-use-1
    2. Amazon side ASN: 64613
    3. DNS Support - Enabled
@@ -118,19 +108,22 @@ ISSUE - Update SG to include SSH Access to Private2 EC21
    5. Default Route Table Association - Enabled
    6. Default Route Table Propagation - Enabled
    7. Multi-cast Support - Disabled
-7. Connect TGW to VPC
-   1. Attachment Name - USE1-Private1
-8. Check Route Propogations...
-9. Create Transit GW Attachment...
-   1. Select USE-1 TGW
+4. Connect TGW to VPC
+   1. Attachment Name - VPC4Production
+   2. There is only a single subnet.
+5. Create TGW Attachment - To Primary Region
+   1. Select your TGW
    2. Attachment type = Peering Connection
-   3. Copy TGW ID from other region...
-   4. Wait for Pending Acceptance
-   5. Accept in CA Region.
-10. Create Static Route in USE1
-    1. CIDR 10.0.0.0/8 using new Peering Attachment.
-11. Create STatic Route in CA1 - Outbound
-    1. CIDR 172.12.1.0/24 using Peering ATtachment
-12. Check Static Routes for VPC Private 1 and VPC Private 2 - Ok...
-13. Add Blackhole Route - 172.12.0.0/16 to Private 2 Route
-
+   3. Copy TGW ID from the primary region.
+   4. Wait for attachment to change to **pending acceptance**
+   5. Accept the connection in primary region.
+   6. Wait for connection status to **available**
+7. Update Secondary Region - Subnet Route Table (0.0.0.0/0) to TGW
+8. Update Secondary Region - TGW Route Table (0.0.0.0/0) to Peered TGW
+11. Update Primary Region - TGW Route Table (No Name) to Peered TGW
+12. Update Primary Region - Subnet Route Table **Egress TGW RT** with CIDR **10.50.4.0/22** attachment (New Peered)
+13. Update Primary Region - Subnet Route Table **Prod TGW RT** with CIDR **10.50.4.0/22** attachment (New Peered)
+14. Connect to ec2Prod1 - Test Ping to ec2Prod4.  - Works as expected.
+15. Connect to ec2Dev1 - test Ping to ec2Prod4. - Works... We don't want Dev to connect to Prod...  So what do we do?
+16. Update Primary Region - Subnet Route Table **DEV TGW RT** with CIDR **10.50.4.0/22** connected to Blackhole.
+17. Connect to ec2Dev1 - test Ping to ec2Prod4. - ping fails now!  As expected. 
