@@ -100,18 +100,19 @@ Learn how AWS Transit Gateway works!
 
 ## 4. Extra Credit - Let's add another region to our Transit Gateway
 
-3. Create Transit GW
-   1. Name tag: tgw-use-1
+1. Connect to Secondary Region
+2. Create Transit GW
+   1. Name tag: tgw-REGION2-1
    2. Amazon side ASN: 64613
    3. DNS Support - Enabled
    4. VPN ECMP Support - Enabled
    5. Default Route Table Association - Enabled
    6. Default Route Table Propagation - Enabled
    7. Multi-cast Support - Disabled
-4. Connect TGW to VPC
+3. Connect TGW to VPC
    1. Attachment Name - VPC4Production
    2. There is only a single subnet.
-5. Create TGW Attachment - To Primary Region
+4. Create TGW Attachment - To Primary Region
    1. Select your TGW
    2. Attachment type = Peering Connection
    3. Copy TGW ID from the primary region.
@@ -120,10 +121,11 @@ Learn how AWS Transit Gateway works!
    6. Wait for connection status to **available**
 7. Update Secondary Region - Subnet Route Table (0.0.0.0/0) to TGW
 8. Update Secondary Region - TGW Route Table (0.0.0.0/0) to Peered TGW
-11. Update Primary Region - TGW Route Table (No Name) to Peered TGW
-12. Update Primary Region - Subnet Route Table **Egress TGW RT** with CIDR **10.50.4.0/22** attachment (New Peered)
-13. Update Primary Region - Subnet Route Table **Prod TGW RT** with CIDR **10.50.4.0/22** attachment (New Peered)
-14. Connect to ec2Prod1 - Test Ping to ec2Prod4.  - Works as expected.
-15. Connect to ec2Dev1 - test Ping to ec2Prod4. - Works... We don't want Dev to connect to Prod...  So what do we do?
-16. Update Primary Region - Subnet Route Table **DEV TGW RT** with CIDR **10.50.4.0/22** connected to Blackhole.
-17. Connect to ec2Dev1 - test Ping to ec2Prod4. - ping fails now!  As expected. 
+9. Update Primary Region - TGW Route Table name to **VPC4**
+11. Update Primary Region - TGW Route Table **VPC4** to Peered TGW
+12. Update Primary Region - Subnet Route Table **Egress TGW RT** with CIDR **10.50.4.0/22** attachment **VPC4**
+13. Update Primary Region - Subnet Route Table **Prod TGW RT** with CIDR **10.50.4.0/22** attachment **VPC4**
+14. Connect to **ec2Prod1** - Test Ping to **ec2Prod1R2**.  - Works as expected.
+15. Connect to **ec2Dev1** - test Ping to **ec2Prod1R2**. - Works... We don't want Dev to connect to Prod...  So what do we do?
+16. Update Primary Region - Subnet Route Table **DEV TGW RT** with CIDR **10.50.4.0/22** connected to **Blackhole**.
+17. Connect to **ec2Dev1** - test Ping to ec2Prod4. - ping fails now!  As expected. 
