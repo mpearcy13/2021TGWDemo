@@ -128,4 +128,4 @@ Learn how AWS Transit Gateway works!
 14. Connect to **ec2Prod1** - Test Ping to **ec2Prod1R2**.  - Works as expected.
 15. Connect to **ec2Dev1** - test Ping to **ec2Prod1R2**. - Works... We don't want Dev to connect to Prod...  So what do we do?
 16. Update Primary Region - Subnet Route Table **DEV TGW RT** with CIDR **10.50.4.0/22** connected to **Blackhole**.
-17. Connect to **ec2Dev1** - test Ping to ec2Prod4. - ping fails now!  As expected. 
+17. Connect to **ec2Dev1** - test Ping to **ec2Prod1R2**. - ping fails now!  As expected. 
