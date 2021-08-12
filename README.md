@@ -140,6 +140,7 @@ Only if Part 4 was setup.
 4. Delete the Transit Gateway.
 5. Once TGW is deleted, open CloudFormation.
 6. Select the stack deployed and choose to delete the stack.
+7. Delete the EC2 Key.
 
 ## Clean Up - Region 1
 
@@ -149,3 +150,4 @@ Only if Part 4 was setup.
 4. Delete the Transit Gateway.
 5. Once TGW is deleted, open CloudFormation.
 6. Select the stack deployed and choose to delete the stack.
+7. Delete the EC2 Key.
