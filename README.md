@@ -129,3 +129,23 @@ Learn how AWS Transit Gateway works!
 15. Connect to **ec2Dev1** - test Ping to **ec2Prod1R2**. - Works... We don't want Dev to connect to Prod...  So what do we do?
 16. Update Primary Region - Subnet Route Table **DEV TGW RT** with CIDR **10.50.4.0/22** connected to **Blackhole**.
 17. Connect to **ec2Dev1** - test Ping to **ec2Prod1R2**. - ping fails now!  As expected. 
+
+
+## Clean Up - Region 2
+Only if Part 4 was setup.
+
+1. Connect to the Second Region.
+2. Open VPC - Transit Gateway Attachments
+3. Delete both Attachments.
+4. Delete the Transit Gateway.
+5. Once TGW is deleted, open CloudFormation.
+6. Select the stack deployed and choose to delete the stack.
+
+## Clean Up - Region 1
+
+1. Connect to the First Region.
+2. Open VPC - Transit Gateway Attachments
+3. Delete 3 Attachments. (VPC0Egress, VPC1Production and VPC2Development)
+4. Delete the Transit Gateway.
+5. Once TGW is deleted, open CloudFormation.
+6. Select the stack deployed and choose to delete the stack.
