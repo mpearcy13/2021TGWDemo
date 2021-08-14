@@ -27,34 +27,34 @@ Learn how AWS Transit Gateway works!
    * DNS Support: Yes
    * IPv6 Support: No
    * Select VPC: VPC0Egress
-   * Subnet: SnPbEg1
+   * Subnet: VPC0 Egress Private
 4. Create TG Attachment - **VPC1Production**
    * Attachment Type: VPC
    * Attachment name tag: VPC1Production
    * DNS Support: Yes
    * IPv6 Support: No
    * Select VPC: VPC1Production
-   * Subnet: Select only subnet.
+   * Subnet: VPC1 Production Private
 5. Create TG Attachment - **VPC2Development**
    * Attachment Type: VPC
    * Attachment name tag: VPC2Development
    * DNS Support: Yes
    * IPv6 Support: No
    * Select VPC: VPC2Development
-   * Subnet: Select only subnet.
+   * Subnet: VPC2 Development Private
 6. Open TGW Route Table and review routes.  You should now see 3 Routes
    * 10.51.0.0/22
    * 10.51.4.0/22
    * 10.51.8.0/22
 
 ## 2. Setup Traffic Flow throught the Transit Gateway
-1. Update Subnet Route Table **RT SnPbEg1**
+1. Update Subnet Route Table **VPC0 RT Public**
    * 10.0.0.0/8 destination Transit Gateway and select the TGW
-2. Update Subnet Route Table **RT SnPrEg1**
+2. Update Subnet Route Table **VPC0 RT Private**
    * 10.0.0.0/8 destination Transit Gateway and select the TGW
-3. Update Subnet Route Table **RT VPC1Production**
+3. Update Subnet Route Table **VPC1 RT Private**
    * 0.0.0.0/0 destination Transit Gateway and select the TGW
-4. Update Subnet Route Table **RT VPC2Development**
+4. Update Subnet Route Table **VPC2 RT Private**
    * 0.0.0.0/0 destination Transit Gateway and select the TGW
 5. Connect to **ec2Prod**
    * ssh -i "KEYNAME.pem" ec2-user@EC2PRODIP
