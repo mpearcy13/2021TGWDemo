@@ -100,35 +100,38 @@ Learn how AWS Transit Gateway works!
 
 ## 4. Extra Credit - Let's add another region to our Transit Gateway
 
-1. Connect to Secondary Region
-2. Create Transit GW
-   1. Name tag: tgw-REGION2-1
+1. Ensure new Key is created in the new region (US-East-1)
+2. Region 2 - Create a new Transit GW.
+   1. Name tag: tgw-use-1
    2. Amazon side ASN: 64613
    3. DNS Support - Enabled
    4. VPN ECMP Support - Enabled
    5. Default Route Table Association - Enabled
    6. Default Route Table Propagation - Enabled
    7. Multi-cast Support - Disabled
-3. Connect TGW to VPC
-   1. Attachment Name - VPC4Production
-   2. There is only a single subnet.
-4. Create TGW Attachment - To Primary Region
-   1. Select your TGW
+3. Region 2 - Connect TGW to VPC
+   1. Attachment Name - USE1-Private1
+   2. Attachment Name - VPC3Production
+4. Region 2 - Connect TGW to Region 1
+   1. Select USE-1 TGW
    2. Attachment type = Peering Connection
-   3. Copy TGW ID from the primary region.
-   4. Wait for attachment to change to **pending acceptance**
-   5. Accept the connection in primary region.
-   6. Wait for connection status to **available**
-7. Update Secondary Region - Subnet Route Table (0.0.0.0/0) to TGW
-8. Update Secondary Region - TGW Route Table (0.0.0.0/0) to Peered TGW
-9. Update Primary Region - TGW Route Table name to **VPC4**
-11. Update Primary Region - TGW Route Table **VPC4** to Peered TGW
-12. Update Primary Region - Subnet Route Table **Egress TGW RT** with CIDR **10.50.4.0/22** attachment **VPC4**
-13. Update Primary Region - Subnet Route Table **Prod TGW RT** with CIDR **10.50.4.0/22** attachment **VPC4**
-14. Connect to **ec2Prod1** - Test Ping to **ec2Prod1R2**.  - Works as expected.
-15. Connect to **ec2Dev1** - test Ping to **ec2Prod1R2**. - Works... We don't want Dev to connect to Prod...  So what do we do?
-16. Update Primary Region - Subnet Route Table **DEV TGW RT** with CIDR **10.50.4.0/22** connected to **Blackhole**.
-17. Connect to **ec2Dev1** - test Ping to **ec2Prod1R2**. - ping fails now!  As expected. 
+   3. Copy TGW ID from other region...
+   4. Wait for Pending Acceptance
+   5. Accept in Region 1 in the TGW Attachments.
+5. Region 2 - Subnet Route Table **NAMEHERE** (0.0.0.0/0)
+6. Region 2 - Update TGW Route Table
+   1. Add Route **0.0.0.0/0** to **TGW Peering Connection**
+12. Region 1 - Create Route Table
+    1. Name:	Region2 TGW
+13. Region 1 - Update VPC0 TGW 10.50.0.0/16 to Peering
+14. Region 1 - Update **REGION2 TGW** Route Table - Add **0.0.0.0/0** to **VPC0 Egress**
+15. Region 1 - Update Region1 Route Table
+    1. Add Asociation: Select Peering Connection.  Might need to remove from the default Route Table.
+    2. Add Route - **10.50.0.0/16**
+16. Connect to **EC2 Egress** and ping **EC2 VPC3 ip**
+17. Connect tp **EC2 Development** and prin **EC2 VPC3 ip** --> This works.  Need to add a blackhole.
+18. Region 2 - Update **TGW Route** with **10.51.8.0/22** to **Blackhole**
+19. Connect to **EC2 Production** and ping **EC2 VPC3 IP**
 
 
 ## Clean Up - Region 2
