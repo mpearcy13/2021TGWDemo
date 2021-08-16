@@ -14,7 +14,7 @@ Learn how AWS Transit Gateway works!
 ## 1. Setup Transit Gateway
 1. Connect to Primary Region.  (Tested with ca-central-1)
 2. Create Transit GW
-   * Name tag: tgw-ca-1
+   * Name tag: tgw-region-1
    * Amazon Side ASN: 64612
    * DNS Support: Enabled
    * VPN ECMP Support: Enabled
@@ -102,7 +102,7 @@ Learn how AWS Transit Gateway works!
 
 1. Ensure new Key is created in the new region (US-East-1)
 2. Region 2 - Create a new Transit GW.
-   1. Name tag: tgw-use-1
+   1. Name tag: tgw-region-2
    2. Amazon side ASN: 64613
    3. DNS Support - Enabled
    4. VPN ECMP Support - Enabled
