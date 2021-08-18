@@ -58,14 +58,6 @@ Parameters:
     Type: String
     Default: TestKey
 
-  #AMI:
-  #  Description: AMI to for EC2 Images.
-  #  Type: String
-  #  Default: ami-02f84cf47c23f1769
-
-  # Get the latest AMI for the deployment
-  # https://aws.amazon.com/blogs/compute/query-for-the-latest-amazon-linux-ami-ids-using-aws-systems-manager-parameter-store/
-
   AMI:
     Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
     Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
@@ -74,7 +66,7 @@ Resources:
 
 # Private VPC 1 with EC2 Instance
 
-  VPCPrivate1:
+  VPC1Private:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: !Ref VPC1ProductionCIDR
@@ -84,23 +76,23 @@ Resources:
         - Key: Name
           Value: !Sub ${EnvironmentName} VPC1 Production
 
-  PrivateSubnet1:
+  VPC1SubnetPrivate:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref VPCPrivate1
+      VpcId: !Ref VPC1Private
       AvailabilityZone: !Select [ 0, !GetAZs  '' ]
       CidrBlock: !Ref VPC1SubnetPrivateCIDR
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} SnPrProd1 (AZ1)
+          Value: !Sub ${EnvironmentName} VPC1 Production Private (AZ1)
 
-  ICMPIngressSecurityGroup1:
+  VPC1SecGrp1:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: "icmp-ingress-private1-sg"
       GroupDescription: "Security group with ICMP ingress rule"
-      VpcId: !Ref VPCPrivate1
+      VpcId: !Ref VPC1Private
       SecurityGroupIngress:
         - IpProtocol: icmp
           FromPort: -1
@@ -111,17 +103,17 @@ Resources:
           CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} SG Prod Private 1
+          Value: !Sub ${EnvironmentName} VPC1 SG Private
 
-  ec2Instance1:
+  VPC1ec2Instance1:
     Type: 'AWS::EC2::Instance'
     Properties:
       ImageId:  !Ref AMI
       InstanceType: t3.medium
       KeyName: !Ref Key
-      SubnetId: !Ref PrivateSubnet1
+      SubnetId: !Ref VPC1SubnetPrivate
       SecurityGroupIds:
-        - Ref: ICMPIngressSecurityGroup1
+        - Ref: VPC1SecGrp1
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
@@ -131,9 +123,24 @@ Resources:
           Key: Name
           Value: ec2Prod1
 
+  VPC1RouteTablePrivate:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC1Private
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} VPC1 RT Private
+
+  VPC1SubnetPrivateRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref VPC1RouteTablePrivate
+      SubnetId: !Ref VPC1SubnetPrivate
+
 # Private VPC 2 with EC2 Instance
 
-  VPCPrivate2:
+  VPC2Private:
+  #VPCPrivate2:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: !Ref VPC2DevelopmentCIDR
@@ -143,23 +150,23 @@ Resources:
         - Key: Name
           Value: !Sub ${EnvironmentName} VPC2 Development
 
-  PrivateSubnet2:
+  VPC2SubnetPrivate:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref VPCPrivate2
+      VpcId: !Ref VPC2Private
       AvailabilityZone: !Select [ 0, !GetAZs  '' ]
       CidrBlock: !Ref VPC2SubnetPrivateCIDR
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} SnPrDev1 (AZ1)
+          Value: !Sub ${EnvironmentName} VPC2 Development Private (AZ1)
 
-  ICMPIngressSecurityGroup2:
+  VPC2SecGrp1:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: "ingress-sg"
       GroupDescription: "Security group with ICMP ingress rule"
-      VpcId: !Ref VPCPrivate2
+      VpcId: !Ref VPC2Private
       SecurityGroupIngress:
         - IpProtocol: icmp
           FromPort: -1
@@ -174,17 +181,17 @@ Resources:
           CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} SG Dev Private 2
+          Value: !Sub ${EnvironmentName} VPC2 SG Private
 
-  ec2Instance2:
+  VPC2ec2Instance1:
     Type: 'AWS::EC2::Instance'
     Properties:
       ImageId:  !Ref AMI
       InstanceType: t3.medium
       KeyName: !Ref Key
-      SubnetId: !Ref PrivateSubnet2
+      SubnetId: !Ref VPC2SubnetPrivate
       SecurityGroupIds:
-        - Ref: ICMPIngressSecurityGroup2
+        - Ref: VPC2SecGrp1
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
@@ -194,9 +201,23 @@ Resources:
           Key: Name
           Value: ec2Dev1
 
-# Public VPC 0 with EC2 Instance
+  VPC2RouteTablePrivate:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC2Private
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} VPC2 RT Private
 
-  VPCPublic0:
+  VPC2SubnetPrivateRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref VPC2RouteTablePrivate
+      SubnetId: !Ref VPC2SubnetPrivate
+
+# Create Egress VPC0, with a bastion host.  Internet Gateway and NAT Gateway setup to support outbound internet for private subnet as well as TGW after configuration.
+
+  VPC0Egress:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: !Ref VPC0EgressCIDR
@@ -206,53 +227,54 @@ Resources:
         - Key: Name
           Value: !Sub ${EnvironmentName} VPC0 Egress
 
-  PublicSubnet0:
+  VPC0SubnetPublic:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref VPCPublic0
+      VpcId: !Ref VPC0Egress
       AvailabilityZone: !Select [ 0, !GetAZs  '' ]
       CidrBlock: !Ref VPC0SubnetPublicCIDR
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} SnPbEg1 (AZ1)
+          Value: !Sub ${EnvironmentName} VPC0 Egress Public (AZ1)
 
-  InternetGateway:
+  VPC0InternetGateway:
     Type: AWS::EC2::InternetGateway
 
-  VPCGatewayAttachment:
+  VPC0GatewayAttachment:
+  #VPCGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
-      VpcId: !Ref VPCPublic0
-      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPC0Egress
+      InternetGatewayId: !Ref VPC0InternetGateway
 
-  RouteTablePublic0:
+  VPC0RouteTablePublic:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref VPCPublic0
+      VpcId: !Ref VPC0Egress
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} RT SnPbEg1
+          Value: !Sub ${EnvironmentName} VPC0 RT Public
 
-  InternetRoute:
+  VPC0RouteInternet:
     Type: AWS::EC2::Route
     Properties:
       DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGateway
-      RouteTableId: !Ref RouteTablePublic0
+      GatewayId: !Ref VPC0InternetGateway
+      RouteTableId: !Ref VPC0RouteTablePublic
 
-  SubnetPublicRouteTableAssociation:
+  VPC0SubnetPublicRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref RouteTablePublic0
-      SubnetId: !Ref PublicSubnet0
+      RouteTableId: !Ref VPC0RouteTablePublic
+      SubnetId: !Ref VPC0SubnetPublic
 
-  ICMPIngressPublicSecurityGroup1:
+  VPC0SecGrp1:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupName: "icmp-ingress-Public1-sg"
       GroupDescription: "Security group with ICMP/SSH ingress rule"
-      VpcId: !Ref VPCPublic0
+      VpcId: !Ref VPC0Egress
       SecurityGroupIngress:
         - IpProtocol: icmp
           FromPort: -1
@@ -261,45 +283,45 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: 204.191.112.12/32
+          CidrIp: !Ref BastionHostAllowedIP
       SecurityGroupEgress:
         - IpProtocol: -1
           CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} SG Egress Public 1
+          Value: !Sub ${EnvironmentName} VPC0 SG
 
-  NatGateway:
+  VPC0NatGateway:
     Type: AWS::EC2::NatGateway
     Properties:
       AllocationId:
          Fn::GetAtt:
-         - NatEIP
+         - VPC0NatEIP
          - AllocationId
       ConnectivityType: public
-      SubnetId: !Ref PublicSubnet0
+      SubnetId: !Ref VPC0SubnetPublic
 
-  NatEIP:
+  VPC0NatEIP:
    Type: AWS::EC2::EIP
    Properties:
       Domain: vpc
 
-  ec2InstancePublic0Eip:
+  VPC0EC2EIP:
     Type: AWS::EC2::EIP
     Properties:
       Domain: vpc
-      InstanceId: !Ref ec2InstancePublic0
-    DependsOn: SubnetPublicRouteTableAssociation
+      InstanceId: !Ref VPC0ec2Instance1
+    DependsOn: VPC0SubnetPublicRouteTableAssociation
 
-  ec2InstancePublic0:
+  VPC0ec2Instance1:
     Type: 'AWS::EC2::Instance'
     Properties:
       ImageId:  !Ref AMI
       InstanceType: t3.medium
       KeyName: !Ref Key
-      SubnetId: !Ref PublicSubnet0
+      SubnetId: !Ref VPC0SubnetPublic
       SecurityGroupIds:
-        - Ref: ICMPIngressPublicSecurityGroup1
+        - Ref: VPC0SecGrp1
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
@@ -309,85 +331,69 @@ Resources:
           Key: Name
           Value: ec2Egress1
 
-  PrivateSubnet0:
+  VPC0SubnetPrivate:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref VPCPublic0
+      VpcId: !Ref VPC0Egress
       AvailabilityZone: !Select [ 0, !GetAZs  '' ]
       CidrBlock: !Ref VPC0SubnetPrivateCIDR
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} SnPrEg1 (AZ1)
+          Value: !Sub ${EnvironmentName} VPC0 Egress Private (AZ1)
 
-  RouteTablePrivate0:
+  VPC0RouteTablePrivate:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref VPCPublic0
+      VpcId: !Ref VPC0Egress
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} RT SnPrEg1
+          Value: !Sub ${EnvironmentName} VPC0 RT Private
 
-  InternetPrivateRoute:
+  VPC0RouteInternetPrivate:
+  #InternetPrivateRoute:
     Type: AWS::EC2::Route
     Properties:
       DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGateway
-      RouteTableId: !Ref RouteTablePrivate0
+      NatGatewayId: !Ref VPC0NatGateway
+      RouteTableId: !Ref VPC0RouteTablePrivate
 
-  SubnetPrivateRouteTableAssociation:
+  VPC0SubnetPrivateRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref RouteTablePrivate0
-      SubnetId: !Ref PrivateSubnet0
-
-
+      RouteTableId: !Ref VPC0RouteTablePrivate
+      SubnetId: !Ref VPC0SubnetPrivate
 
 Outputs:
-  VPCPrivate1:
-    Description: A reference to the created VPC
-    Value: !Ref VPCPrivate1
 
-  PrivateSubnet1:
-    Description: A reference to the private subnet in the 1st Availability Zone
-    Value: !Ref PrivateSubnet1
-
-  ec2Instance1:
+  VPC0ec2Instance1:
     Description: EC2 Instance ID
-    Value: !Ref ec2Instance1
+    Value: !Ref VPC0ec2Instance1
 
-  ICMPIngressSecurityGroup1:
-    Description: Security group with no ingress rule
-    Value: !Ref ICMPIngressSecurityGroup1
+  VPC1ec2Instance1:
+    Description: EC2 Attached to the private subnet for testing connectivity.
+    Value: !Ref VPC1ec2Instance1
 
-  VPCPrivate2:
-    Description: A reference to the created VPC
-    Value: !Ref VPCPrivate2
-
-  PrivateSubnet2:
-    Description: A reference to the private subnet in the 1st Availability Zone
-    Value: !Ref PrivateSubnet2
-
-  ec2Instance2:
+  VPC2ec2Instance1:
     Description: EC2 Instance ID
-    Value: !Ref ec2Instance2
+    Value: !Ref VPC2ec2Instance1
 
-  ICMPIngressSecurityGroup2:
+  VPC0SecGrp1:
     Description: Security group with no ingress rule
-    Value: !Ref ICMPIngressSecurityGroup2
+    Value: !Ref VPC0SecGrp1
 
-  VPCPublic0:
-    Description: A reference to the created VPC
-    Value: !Ref VPCPublic0
-
-  PublicSubnet0:
-    Description: A reference to the private subnet in the 1st Availability Zone
-    Value: !Ref PublicSubnet0
-
-  ec2InstancePublic0:
-    Description: EC2 Instance ID
-    Value: !Ref ec2InstancePublic0
-
-  ICMPIngressPublicSecurityGroup1:
+  VPC1SecGrp1:
     Description: Security group with no ingress rule
-    Value: !Ref ICMPIngressPublicSecurityGroup1
+    Value: !Ref VPC1SecGrp1
+
+  VPC2SecGrp1:
+    Description: Security group with no ingress rule
+    Value: !Ref VPC2SecGrp1
+
+  VPC0EC2EIP:
+    Description: Bastion Host Public IP
+    Value: !Ref VPC0EC2EIP
+
+  VPC0NatEIP:
+    Description: NAT Gateway Public IP
+    Value: !Ref VPC0NatEIP

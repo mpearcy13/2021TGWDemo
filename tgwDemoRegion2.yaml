@@ -1,19 +1,16 @@
-Description:  This template deploys a VPC, with a pair of public and private subnets spread
-  across two Availability Zones. It deploys an internet gateway, with a default
-  route on the public subnets. It deploys a pair of NAT gateways (one in each AZ),
-  and default routes for them in the private subnets.  Based on https://docs.aws.amazon.com/codebuild/latest/userguide/cloudformation-vpc-template.html
+Description:  This template deploys a VPC with a single EC2 instance.  This environment can be used as a second region for the Transit Gateway, allowing connectivity between regions.
 
 Parameters:
   EnvironmentName:
     Description: An environment name that is prefixed to resource names
     Type: String
 
-  Vpc4ProdCIDR:
+  Vpc3ProdCIDR:
     Description: Please enter the IP range (CIDR notation) for this VPC
     Type: String
     Default: 10.50.4.0/22
 
-  Vpc4SubnetPrivateCIDR:
+  Vpc3SubnetPrivateCIDR:
     Description: Please enter the IP range (CIDR notation) for the private subnet in the first Availability Zone
     Type: String
     Default: 10.50.4.0/24
@@ -31,33 +28,34 @@ Resources:
 
 # Private PVC 1 with EC2 Instance
 
-  VPC4Private:
+  VPC3Private:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: !Ref Vpc4ProdCIDR
+      CidrBlock: !Ref Vpc3ProdCIDR
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} VPC4 Production
+          Value: !Sub ${EnvironmentName} VPC3 Production
 
-  PrivateSubnet4:
+  VPC3SubnetPrivate:
+  #PrivateSubnet4:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref VPC4Private
+      VpcId: !Ref VPC3Private
       AvailabilityZone: !Select [ 0, !GetAZs  '' ]
-      CidrBlock: !Ref Vpc4SubnetPrivateCIDR
+      CidrBlock: !Ref Vpc3SubnetPrivateCIDR
       MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} VPC4 SnPrProd1 (AZ1)
+          Value: !Sub ${EnvironmentName} VPC3SubnetPrivate (AZ1)
 
-  ICMPIngressSecurityGroup4:
+  VPC3SecGrp1:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: "icmp-ingress-private1-sg"
+      GroupName: "ingress-icmp"
       GroupDescription: "Security group with ICMP ingress rule"
-      VpcId: !Ref VPC4Private
+      VpcId: !Ref VPC3Private
       SecurityGroupIngress:
         - IpProtocol: icmp
           FromPort: -1
@@ -68,17 +66,17 @@ Resources:
           CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} VPC4 Security Group
+          Value: !Sub ${EnvironmentName} VPC3SecGrp
 
-  ec2Instance4:
+  VPC3ec2Instance1:
     Type: 'AWS::EC2::Instance'
     Properties:
       ImageId:  !Ref AMI
       InstanceType: t3.medium
       KeyName: !Ref Key
-      SubnetId: !Ref PrivateSubnet4
+      SubnetId: !Ref VPC3SubnetPrivate
       SecurityGroupIds:
-        - Ref: ICMPIngressSecurityGroup4
+        - Ref: VPC3SecGrp1
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
@@ -88,21 +86,33 @@ Resources:
           Key: Name
           Value: ec2Prod1R2
 
+  VPC3RouteTablePrivate:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC3Private
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} RT VPC3 RT Private
 
+  VPC3SubnetPrivateRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref VPC3RouteTablePrivate
+      SubnetId: !Ref VPC3SubnetPrivate
 
 Outputs:
-  VPC4Private:
-    Description: A reference to the created VPC
-    Value: !Ref VPC4Private
+  VPC3Private:
+    Description: Private VPC.
+    Value: !Ref VPC3Private
 
-  PrivateSubnet4:
+  VPC3SubnetPrivate:
     Description: A reference to the private subnet in the 1st Availability Zone
-    Value: !Ref PrivateSubnet4
+    Value: !Ref VPC3SubnetPrivate
 
-  ec2Instance4:
-    Description: EC2 Instance ID
-    Value: !Ref ec2Instance4
+  VPC3ec2Instance1:
+    Description: EC2 Instance ID for instance associated to VPC3.
+    Value: !Ref VPC3ec2Instance1
 
-  ICMPIngressSecurityGroup4:
+  VPC3SecGrp1:
     Description: Security group with ICMP ingress only.
-    Value: !Ref ICMPIngressSecurityGroup4
+    Value: !Ref VPC3SecGrp1
