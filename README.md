@@ -1,6 +1,8 @@
 # 2021TGWDemo
 Learn how AWS Transit Gateway works!
 
+We will be setting up a Transit Gateway environment with a centralized Egress VPC for internet traffic out to the Internet.  In addition we do not want to allow traffic between the Production VPC and the Development VPC.
+
 
 ## Prework
 
@@ -14,6 +16,9 @@ Learn how AWS Transit Gateway works!
 
 
 ## 1. Setup Transit Gateway
+
+This will setup the Transit Gateway and put the connections in place so it will be ready to route traffic between the VPCs.  At the end of this traffic will not be flowing through the VPC, but everything will be in place to allow this.
+
 1. Connect to Primary Region.  (Tested with ca-central-1)
 2. Create Transit GW
    * Name tag: tgw-region-1
@@ -50,6 +55,9 @@ Learn how AWS Transit Gateway works!
    * 10.51.8.0/22
 
 ## 2. Setup Traffic Flow throught the Transit Gateway
+
+In this step, traffic will be redirected to the Transit Gateway and we will begin to see how the traffic flows using the default routing table.  At the end of this step we will have traffic between all VPCs working and egress to the internet setup.
+
 1. Update Subnet Route Table **VPC0 RT Public**
    * 10.0.0.0/8 destination Transit Gateway and select the TGW
 2. Update Subnet Route Table **VPC0 RT Private**
@@ -69,6 +77,8 @@ Learn how AWS Transit Gateway works!
 12. From **ec2Prod** run the following command:  **curl ifconfig.me**  This will provide the public IP used.  What IP is this?  Hint, check your NAT Gateway.
 
 ## 3. Using Routing Domains
+
+As we discovered in Step 2, there was traffic flowing from the Production to the Development environments.  We want to prevent this from happening.  To do so, we are going to leverage Route Domains to stop traffic between these two environments.
 
 1. Open the Transit Gateway Route Table.  Then delete the 3 associations linked to this route table.
 2. Create Outbound Route Tables for the 3 Domains
@@ -101,6 +111,8 @@ Learn how AWS Transit Gateway works!
 14. From **ec2Egress1** - Try to ping **Ec2Dev1** - Nice it works!
 
 ## 4. Extra Credit - Let's add another region to our Transit Gateway
+
+If you are interested in adding a 2nd region to your Transit Gateway environment, please ensure you have completed the provisioning of the CFN template in the 2nd region and have setup your EC2 key for remote access into the EC2 instance if desired.  At the end of this we will have setup a connection between the two transit Gateways and setup routes to send traffic out from the 2nd region through the egress VPC in Region 1.
 
 1. Ensure new Key is created in the new region (US-East-1)
 2. Region 2 - Create a new Transit GW.
