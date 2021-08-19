@@ -72,7 +72,7 @@ Resources:
     Type: 'AWS::EC2::Instance'
     Properties:
       ImageId:  !Ref AMI
-      InstanceType: t3.medium
+      InstanceType: t3.micro
       KeyName: !Ref Key
       SubnetId: !Ref VPC3SubnetPrivate
       SecurityGroupIds:
