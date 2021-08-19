@@ -5,11 +5,13 @@ Learn how AWS Transit Gateway works!
 ## Prework
 
 1. Create an EC2 Key in Primary and Secondary Regions.
-2. Deploy tgwDemoRegion1.yaml CloudFormation template to the primary region.
-3. Deploy tgwDemoRegion2.yaml CloudFormation template to the secondary region.
-4. Connect with SSH to the Egress EC2 instance via its public IP address.
-5. Copy EC2 Keys to the EC2 instance so it can be used to connect to other instances in the environment.
-6. Change security on the 2 key files...  chmod 400 KEYNAME.pem
+2. Change security on the 2 key files...  chmod 400 KEYNAME.pem 
+3. Deploy tgwDemoRegion1.yaml CloudFormation template to the primary region.
+4. Deploy tgwDemoRegion2.yaml CloudFormation template to the secondary region.
+5. Connect with SSH to the Egress EC2 instance via its public IP address.
+6. Copy EC2 Keys to the EC2 instance so it can be used to connect to other instances in the environment.
+7. Change security on the 2 key files...  chmod 400 KEYNAME.pem
+
 
 ## 1. Setup Transit Gateway
 1. Connect to Primary Region.  (Tested with ca-central-1)
